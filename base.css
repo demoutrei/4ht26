@@ -1,0 +1,11 @@
+:root {
+  --dark-crust: #11111b;
+  --dark-mantle: #181825;
+  --dark-primary: #1e1e2e;
+}
+
+
+body {
+  background-color: var(--dark-crust);
+  margin: 0;
+}
