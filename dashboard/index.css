@@ -31,3 +31,16 @@
     }
   }
 }
+
+
+#nodePanel {
+  background-color: var(--dark-surface-0);
+  border-radius: 15px;
+  height: calc(100% - 20px);
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 500px;
+  z-index: 1;
+}
