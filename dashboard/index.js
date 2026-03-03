@@ -12,37 +12,64 @@ editor.on("nodeCreated", (id) => {
 })
 
 
-editor.addNode(
-  "Sample Node",
-  0, 1,
-  100, 100,
-  "sample-node",
+const mockData = [
   {
-    "name": "Test"
+    "_id": 1,
+    "name": "Sample Node Name",
+    "outputNodes": {
+      "1": [2]
+    }
   },
-  `test`
-);
-
-editor.addNode(
-  "Another Sample Node",
-  1, 0,
-  200, 200,
-  "sample-node",
   {
-    "name": "Test 2"
-  },
-  `test 2`
-)
-
-editor.addNode(
-  "Another Another Sample Node",
-  1, 0,
-  300, 300,
-  "sample-node",
-  {},
-  `test 3`
-)
+    "_id": 2,
+    "name": "Sample Node Name 2",
+    "inputNodes": {
+      "1": [1]
+    }
+  }
+]
 
 
-editor.addConnection(1, 2, "output_1", "input_1");
-editor.addConnection(1, 3, "output_1", "input_1");
+function renderNodes(nodes) {
+  for (const index in nodes) {
+    const node = nodes[index];
+    createNode(node);
+  }
+  for (const index in nodes) {
+    const node = nodes[index];
+    renderConnections(node);
+  }
+}
+
+
+function createNode(data) {
+  editor.addNode(
+    data.name,
+    Object.keys(data.inputNodes ?? {}).length, Object.keys(data.outputNodes ?? {}).length,
+    275 * (data._id), 20,
+    "sample-node",
+    data,
+    `${data.name}`
+  );
+}
+
+
+function renderConnections(node) {
+  for (const output in node.outputNodes) {
+    const outputNodeIds = node.outputNodes[output];
+    for (const outputNodeIdsIndex in outputNodeIds) {
+      const outputNodeId = outputNodeIds[outputNodeIdsIndex];
+      const outputNode = mockData[outputNodeId - 1];
+      const outputNodeInputNodes = outputNode.inputNodes ?? {};
+      for (const input in outputNodeInputNodes) {
+        if (outputNodeInputNodes[input].includes(node._id)) {
+          console.log(node._id, outputNodeId, `output_${parseInt(output)}`, `input_${input}`);
+          editor.addConnection(node._id, outputNodeId, `output_${parseInt(output)}`, `input_${input}`);
+        }
+      }
+    }
+  }
+}
+
+
+renderNodes(mockData);
