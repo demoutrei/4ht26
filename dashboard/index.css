@@ -9,8 +9,25 @@
     cursor: move;
   }
   
+  .connection > .main-path {
+    stroke: #7287fd;
+  }
+  
   .sample-node {
     background-color: white;
     color: black;
+
+    &:hover {
+      cursor: pointer;
+    }
+    
+    > .inputs > .input {
+      background-color: white;
+      border-color: black;
+    }
+    
+    > .outputs > .output {
+      border-color: black;
+    }
   }
 }

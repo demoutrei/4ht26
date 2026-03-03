@@ -8,7 +8,7 @@ editor.line_path = 1;
 
 
 editor.on("nodeCreated", (id) => {
-  console.log(id);
+  console.log(`Node created with ID: ${id}`);
 })
 
 
@@ -17,12 +17,19 @@ const mockData = [
     "_id": 1,
     "name": "Sample Node Name",
     "outputNodes": {
-      "1": [2]
+      "1": [2, 3]
     }
   },
   {
     "_id": 2,
     "name": "Sample Node Name 2",
+    "inputNodes": {
+      "1": [1]
+    }
+  },
+  {
+    "_id": 3,
+    "name": "Sample Node Name 3",
     "inputNodes": {
       "1": [1]
     }
@@ -63,7 +70,6 @@ function renderConnections(node) {
       const outputNodeInputNodes = outputNode.inputNodes ?? {};
       for (const input in outputNodeInputNodes) {
         if (outputNodeInputNodes[input].includes(node._id)) {
-          console.log(node._id, outputNodeId, `output_${parseInt(output)}`, `input_${input}`);
           editor.addConnection(node._id, outputNodeId, `output_${parseInt(output)}`, `input_${input}`);
         }
       }
