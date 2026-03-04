@@ -21,6 +21,11 @@ class Database:
     return self.__connection
 
 
+  def create_user(self: Self, user: User) -> User:
+    # Code to append user to database
+    ...
+
+
   @property
   def path(self: Self) -> str:
     return self.__file_path

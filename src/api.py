@@ -1,4 +1,5 @@
 from .db import FacultyDatabase, StudentDatabase
+from .models import User
 from fastapi import FastAPI
 
 
@@ -9,6 +10,12 @@ app: FastAPI = FastAPI(
 
 faculty_db: FacultyDatabase = FacultyDatabase()
 student_db: StudentDatabase = StudentDatabase()
+
+
+@app.get('/users/')
+def create_user(user: User) -> User:
+  ...
+  # Code to create User here
 
 
 @app.get('/users/{user_id}')
