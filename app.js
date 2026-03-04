@@ -13,10 +13,7 @@ app.set("views", "./build/templates");
 
 app.get('/u/:userId/dashboard', (request, response) => {
   const userId = request.params.userId;
-  getUser(userId).then(data => {
-    console.log(data);
-  })
-  response.render('dashboard');
+  getUser(userId).then(data => response.render("dashboard", data));
 })
 
 

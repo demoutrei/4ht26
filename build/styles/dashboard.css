@@ -1,0 +1,19 @@
+header {
+  align-items: center;
+  background-color: var(--dark-mantle);
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  justify-content: space-between;
+  left: 0;
+  padding: 0 1rem;
+  position: sticky;
+  top: 0;
+  width: 100%;
+
+  > #dashboard-title {
+    color: var(--dark-text);
+    font-size: 1.35em;
+    font-weight: bold;
+  }
+}

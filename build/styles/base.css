@@ -3,10 +3,12 @@
   --dark-mantle: #181825;
   --dark-primary: #1e1e2e;
   --dark-surface-0: #313244;
+  --dark-text: #cdd6f4;
 }
 
 
 body {
   background-color: var(--dark-crust);
+  font-family: "Rubik";
   margin: 0;
 }
