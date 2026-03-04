@@ -54,6 +54,8 @@ def log_request(requester_id: str, instruction: str, intent: str, pdf_path: str,
         conn.commit()
         return c.lastrowid
 
+fgh
+
 def update_request_status(request_id: int, status: str) -> bool:
     """Update the status of an agent request (e.g., approved, rejected, sent, draft)."""
     valid_statuses = ["draft", "approved", "rejected", "sent"]
