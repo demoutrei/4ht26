@@ -1,20 +1,18 @@
-import { BaseHTML } from './base.js';
-
-
 import express from 'express';
+
+
 const app = express();
 const port = 5500;
 
 
+app.use(express.static('build'));
 app.set("view engine", "ejs");
+app.set("views", "./build/templates");
 
 
-app.get("/dashboard/workflows/:workflowId", (request, response) => {
-  console.log(request.params.workflowId);
-  response.render("dashboard/workflows", (error, html) => {
-    console.log(html);
-    response.send(html);
-  })
+app.get('/u/:userId/dashboard', (request, response) => {
+  const userId = request.params.userId;
+  response.render('dashboard');
 })
 
 
