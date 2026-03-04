@@ -50,3 +50,12 @@ class ApprovalRequest(BaseModel):
 
 class SignatureApprovalRequest(BaseModel):
     signature: str = Field(..., min_length=1, description="E-signature data (base64, text, or signature code)")
+
+class WorkflowCreate(BaseModel):
+    workflow_name: str = Field(..., min_length=3, description="Name of the workflow")
+    workflow_description: Optional[str] = None
+    workflow_config: str = Field(..., description="Workflow configuration/template data")
+
+class WorkflowTrigger(BaseModel):
+    pass
+

@@ -38,6 +38,31 @@ def init_db():
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
         ''')
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS created_workflows (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            creator_id TEXT NOT NULL,
+            workflow_name TEXT NOT NULL,
+            workflow_description TEXT,
+            workflow_config TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(creator_id) REFERENCES users(id_number)
+        )
+        ''')
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS triggered_workflows (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            workflow_id INTEGER NOT NULL,
+            triggered_by TEXT NOT NULL,
+            status TEXT DEFAULT 'running',
+            execution_result TEXT,
+            triggered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            completed_at DATETIME,
+            FOREIGN KEY(workflow_id) REFERENCES created_workflows(id),
+            FOREIGN KEY(triggered_by) REFERENCES users(id_number)
+        )
+        ''')
         conn.commit()
 
 def log_request(requester_id: str, instruction: str, intent: str, pdf_path: str, status: str = "draft") -> int:
@@ -99,90 +124,78 @@ def get_user_requests(user_id: str):
         c.execute("SELECT * FROM agent_requests WHERE requester_id = ? ORDER BY created_at DESC", (user_id,))
         return c.fetchall()
 
-import sqlite3
-from db import get_db # Importing your existing context manager
-
-def seed_dummy_data():
+def create_workflow(creator_id: str, workflow_name: str, workflow_description: str, workflow_config: str) -> int:
+    """Create a new workflow and return its ID."""
     with get_db() as conn:
         c = conn.cursor()
-
-        # 1. Dummy Data for the 'users' table 
-        # Schema: id_number, hashed_password, full_name, role
-        dummy_users = [
-            ('2024-001', 'hash_abc_123', 'Alice Smith', 'student'),
-            ('2024-002', 'hash_def_456', 'Dr. Bob Jones', 'faculty'),
-            ('2024-003', 'hash_ghi_789', 'Charlie Brown', 'student')
-        ]
-
-        # 2. Dummy Data for the 'agent_requests' table 
-        # Schema: requester_id, instruction, intent, status, pdf_path
-        # Note: id and created_at are handled automatically 
-        dummy_requests = [
-            ('2024-001', 'Generate my transcript', 'transcript_request', 'completed', '/path/to/file1.pdf'),
-            ('2024-003', 'Change my major to CS', 'major_change', 'pending', '/path/to/file2.pdf'),
-            ('2024-002', 'Submit research grant', 'grant_submission', 'draft', None)
-        ]
-
-        # Execute inserts [cite: 34, 35, 36]
-        c.executemany('''
-            INSERT OR IGNORE INTO users (id_number, hashed_password, full_name, role)
-            VALUES (?, ?, ?, ?)
-        ''', dummy_users)
-
-        c.executemany('''
-            INSERT INTO agent_requests (requester_id, instruction, intent, status, pdf_path)
-            VALUES (?, ?, ?, ?, ?)
-        ''', dummy_requests)
-
+        c.execute(
+            '''INSERT INTO created_workflows (creator_id, workflow_name, workflow_description, workflow_config)
+               VALUES (?, ?, ?, ?)''',
+            (creator_id, workflow_name, workflow_description, workflow_config)
+        )
         conn.commit()
-        print(f"Database seeded successfully!")
+        return c.lastrowid
 
-def clear_agent_requests():
-    """Delete all records from the agent_requests table."""
+def get_workflow_by_id(workflow_id: int):
+    """Fetch a workflow by ID."""
     with get_db() as conn:
         c = conn.cursor()
-        c.execute("DELETE FROM agent_requests")
-        conn.commit()
-        print("All agent requests cleared from the database.")
+        c.execute("SELECT * FROM created_workflows WHERE id = ?", (workflow_id,))
+        return c.fetchone()
 
-def reset_agent_request_id():
-    """Reset the AUTOINCREMENT ID sequence for agent_requests table."""
+def get_user_workflows(user_id: str):
+    """Fetch all workflows created by a user."""
     with get_db() as conn:
         c = conn.cursor()
-        # Reset the sequence counter in sqlite_sequence
-        c.execute("DELETE FROM sqlite_sequence WHERE name='agent_requests'")
-        conn.commit()
-        print("Agent request ID counter reset to 0. Next insert will start at ID 1.")
+        c.execute("SELECT * FROM created_workflows WHERE creator_id = ? ORDER BY created_at DESC", (user_id,))
+        return c.fetchall()
 
-def reset_agent_requests_full():
-    """Clear all agent requests AND reset the ID sequence (nuclear option)."""
+def trigger_workflow(workflow_id: int, triggered_by: str) -> int:
+    """Trigger/execute a workflow and return the execution ID."""
     with get_db() as conn:
         c = conn.cursor()
-        c.execute("DELETE FROM agent_requests")
-        c.execute("DELETE FROM sqlite_sequence WHERE name='agent_requests'")
+        c.execute(
+            '''INSERT INTO triggered_workflows (workflow_id, triggered_by, status)
+               VALUES (?, ?, 'running')''',
+            (workflow_id, triggered_by)
+        )
         conn.commit()
-        print("Agent requests table cleared and ID counter reset.")
+        return c.lastrowid
 
-def clear_users():
-    """Delete all records from the users table."""
+def get_triggered_workflow_by_id(triggered_id: int):
+    """Fetch a triggered workflow execution by ID."""
     with get_db() as conn:
         c = conn.cursor()
-        c.execute("DELETE FROM users")
-        conn.commit()
-        print("All users cleared from the database.")
+        c.execute("SELECT * FROM triggered_workflows WHERE id = ?", (triggered_id,))
+        return c.fetchone()
 
-def clear_all_data():
-    """Clear both users and agent_requests tables, reset all sequences."""
+def get_user_triggered_workflows(user_id: str):
+    """Fetch all workflow executions triggered by a user."""
     with get_db() as conn:
         c = conn.cursor()
-        c.execute("DELETE FROM agent_requests")
-        c.execute("DELETE FROM users")
-        c.execute("DELETE FROM sqlite_sequence WHERE name='agent_requests'")
-        conn.commit()
-        print("All data cleared and ID sequences reset.")
+        c.execute("SELECT * FROM triggered_workflows WHERE triggered_by = ? ORDER BY triggered_at DESC", (user_id,))
+        return c.fetchall()
 
-if __name__ == "__main__":
-    seed_dummy_data()
+def update_triggered_workflow_status(triggered_id: int, status: str, execution_result: str = None) -> bool:
+    """Update the status and result of a triggered workflow."""
+    from datetime import datetime
+    valid_statuses = ["running", "completed", "failed", "cancelled"]
+    if status not in valid_statuses:
+        raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
+    
+    with get_db() as conn:
+        c = conn.cursor()
+        completed_at = datetime.now().isoformat() if status in ["completed", "failed", "cancelled"] else None
+        c.execute(
+            '''UPDATE triggered_workflows 
+               SET status = ?, execution_result = ?, completed_at = ?
+               WHERE id = ?''',
+            (status, execution_result, completed_at, triggered_id)
+        )
+        conn.commit()
+        return c.rowcount > 0
+
+
     
     
     

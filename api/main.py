@@ -1,16 +1,3 @@
-# from fastapi import FastAPI
-# from typing import Any
-
-
-# app: FastAPI = FastAPI()
-
-
-# @app.get("/api/workflows/{workflow_id}")
-# def workflow_display(workflow_id: int) -> dict[str, Any]:
-#   return {
-#     "text": "Hello, World!"
-#   }
-
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,9 +5,9 @@ from typing import Annotated
 from datetime import timedelta
 from dotenv import load_dotenv
 
-from db import init_db, get_db, update_request_status, get_request_by_id, get_user_requests, approve_request_with_signature
+from db import init_db, get_db, update_request_status, get_request_by_id, get_user_requests, approve_request_with_signature, create_workflow, get_workflow_by_id, get_user_workflows, trigger_workflow, get_triggered_workflow_by_id, get_user_triggered_workflows, update_triggered_workflow_status
 from auth import create_access_token, get_current_user, hash_password, verify_password
-from schemas import UserCreate, Token, Instruction, SignatureApprovalRequest
+from schemas import UserCreate, Token, Instruction, SignatureApprovalRequest, WorkflowCreate, WorkflowTrigger
 from routers.agent1 import router as agent_router
 
 load_dotenv()
@@ -196,3 +183,107 @@ def regenerate_request(request_id: int, current_user: dict = Depends(get_current
         raise HTTPException(500, "Failed to regenerate request")
     
     return {"message": "Request regenerated. Ready for resubmission.", "request_id": request_id, "new_status": "draft"}
+
+# ============ WORKFLOW ENDPOINTS ============
+
+@app.post("/api/workflows")
+def create_new_workflow(workflow: WorkflowCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new workflow (users can create workflows)."""
+    workflow_id = create_workflow(
+        creator_id=current_user["id_number"],
+        workflow_name=workflow.workflow_name,
+        workflow_description=workflow.workflow_description or "",
+        workflow_config=workflow.workflow_config
+    )
+    return {
+        "message": "Workflow created successfully",
+        "workflow_id": workflow_id,
+        "creator_id": current_user["id_number"]
+    }
+
+@app.get("/api/workflows")
+def list_workflows(current_user: dict = Depends(get_current_user)):
+    """List all workflows created by the current user."""
+    workflows = get_user_workflows(current_user["id_number"])
+    return {"workflows": [dict(w) for w in workflows]}
+
+@app.get("/api/workflows/{workflow_id}")
+def get_workflow(workflow_id: int, current_user: dict = Depends(get_current_user)):
+    """Get details of a specific workflow."""
+    workflow = get_workflow_by_id(workflow_id)
+    if not workflow:
+        raise HTTPException(404, "Workflow not found")
+    
+    # Users can only view their own workflows
+    if workflow["creator_id"] != current_user["id_number"]:
+        raise HTTPException(403, "You can only view your own workflows")
+    
+    return dict(workflow)
+
+@app.post("/api/workflows/{workflow_id}/trigger")
+def trigger_new_workflow(workflow_id: int, current_user: dict = Depends(get_current_user)):
+    """Trigger/execute a workflow."""
+    workflow = get_workflow_by_id(workflow_id)
+    if not workflow:
+        raise HTTPException(404, "Workflow not found")
+    
+    triggered_id = trigger_workflow(workflow_id, current_user["id_number"])
+    return {
+        "message": "Workflow triggered successfully",
+        "triggered_id": triggered_id,
+        "workflow_id": workflow_id,
+        "status": "running"
+    }
+
+@app.get("/api/triggered-workflows")
+def list_triggered_workflows(current_user: dict = Depends(get_current_user)):
+    """List all workflow executions triggered by the current user."""
+    triggered = get_user_triggered_workflows(current_user["id_number"])
+    return {"triggered_workflows": [dict(t) for t in triggered]}
+
+@app.get("/api/triggered-workflows/{triggered_id}")
+def get_triggered_workflow(triggered_id: int, current_user: dict = Depends(get_current_user)):
+    """Get details of a specific triggered workflow execution."""
+    triggered = get_triggered_workflow_by_id(triggered_id)
+    if not triggered:
+        raise HTTPException(404, "Triggered workflow not found")
+    
+    # Users can only view their own triggered workflows
+    if triggered["triggered_by"] != current_user["id_number"]:
+        raise HTTPException(403, "You can only view your own triggered workflows")
+    
+    return dict(triggered)
+
+@app.post("/api/triggered-workflows/{triggered_id}/complete")
+def complete_triggered_workflow(triggered_id: int, current_user: dict = Depends(get_current_user)):
+    """Mark a triggered workflow as completed with result."""
+    triggered = get_triggered_workflow_by_id(triggered_id)
+    if not triggered:
+        raise HTTPException(404, "Triggered workflow not found")
+    
+    # Only the user who triggered it can update its status
+    if triggered["triggered_by"] != current_user["id_number"]:
+        raise HTTPException(403, "You can only update your own triggered workflows")
+    
+    success = update_triggered_workflow_status(triggered_id, "completed", "Workflow execution completed")
+    if not success:
+        raise HTTPException(500, "Failed to complete workflow")
+    
+    return {"message": "Workflow marked as completed", "triggered_id": triggered_id, "status": "completed"}
+
+@app.post("/api/triggered-workflows/{triggered_id}/fail")
+def fail_triggered_workflow(triggered_id: int, current_user: dict = Depends(get_current_user)):
+    """Mark a triggered workflow as failed with error details."""
+    triggered = get_triggered_workflow_by_id(triggered_id)
+    if not triggered:
+        raise HTTPException(404, "Triggered workflow not found")
+    
+    if triggered["triggered_by"] != current_user["id_number"]:
+        raise HTTPException(403, "You can only update your own triggered workflows")
+    
+    success = update_triggered_workflow_status(triggered_id, "failed", "Workflow execution failed")
+    if not success:
+        raise HTTPException(500, "Failed to mark workflow as failed")
+    
+    return {"message": "Workflow marked as failed", "triggered_id": triggered_id, "status": "failed"}
+
