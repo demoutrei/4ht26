@@ -12,6 +12,10 @@ app.set("view engine", "ejs");
 app.set("views", "./build/templates");
 
 
+app.get('/signup', (request, response) => {
+  response.render("signup");
+})
+
 app.get('/u/:userId/dashboard', async (request, response) => {
   const userId = request.params.userId;
   createUser(userId, "Sample Full Name", "password123").then(data => console.log(data));
