@@ -2,6 +2,7 @@ import express from 'express';
 
 
 const app = express();
+const host = "127.0.0.1";
 const port = 5500;
 const apiBaseUrl = "http://127.0.0.1:8000/api/v1";
 
@@ -13,51 +14,56 @@ app.set("views", "./build/templates");
 
 app.get('/u/:userId/dashboard', async (request, response) => {
   const userId = request.params.userId;
-  
-  try {
-    // First try to create the user
-    await fetch(
-      `http://127.0.0.1:8000/api/v1/users/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          "_id": parseInt(userId),
-          "full_name": "John Doe",
-          "password": "password123",
-        })
-      }
-    );
-    
-    // Then fetch the user data
-    const data = await getUser(userId);
-    response.render("dashboard", data);
-  } catch (err) {
-    console.error("Error:", err.message);
-    response.status(500).send(`Error: ${err.message}`);
-  }
-});
+  createUser(userId, "Sample Full Name", "password123").then(data => console.log(data));
+  getUser(userId).then(data => response.render("dashboard", data));
+})
 
+app.get('/u/:userId/workflows', (request, response) => {
+  const userId = request.params.userId;
+  getUser(userId).then(data => response.render("workflows", data));
+})
 
-app.listen(port, "127.0.0.1", () => {
-  console.log("listening");
+app.get('/u/:userId/workflows/:workflowId'), (request, response) => {
+  const userId = request.params.userId;
+  const workflowId = request.params.workflowId;
+}
+
+app.get('/u/:userId/workflows/:workflowId/:workflowInstanceId', (request, response) => {
+  const userId = request.params.userId;
+  const workflowId = request.params.workflowId;
+  const workflowInstanceId = request.params.workflowInstanceId;
+})
+
+app.get('/u/:userId/history', (request, response) => {
+  const userId = request.params.userId;
 })
 
 
+app.listen(port, host, () => {
+  console.log(`Running on http://${host}:${port}`);
+})
+
+
+async function createUser(userId, fullName, password) {
+  const response = await fetch(
+    `${apiBaseUrl}/users/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "_id": userId,
+        "full_name": fullName,
+        "password": password
+      })
+    }
+  );
+  return await response.json();
+}
+
+
 async function getUser(userId) {
-  try {
-    const response = await fetch(`${apiBaseUrl}/users/${userId}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    if (data.error) {
-      throw new Error(data.error);
-    }
-    return data;
-  } catch (error) {
-    console.error("Fetch error in getUser:", error);
-    throw error;
-  }
+  const response = await fetch(`${apiBaseUrl}/users/${userId}`);
+  return await response.json();
 }

@@ -1,8 +1,10 @@
 :root {
   --dark-crust: #11111b;
   --dark-mantle: #181825;
+  --dark-overlay-0: #6c7086;
   --dark-primary: #1e1e2e;
   --dark-surface-0: #313244;
+  --dark-surface-1: #45475a;
   --dark-text: #cdd6f4;
 }
 
@@ -11,4 +13,5 @@ body {
   background-color: var(--dark-crust);
   font-family: "Rubik";
   margin: 0;
+  overflow-x: clip;
 }
