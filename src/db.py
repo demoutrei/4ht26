@@ -22,9 +22,19 @@ class Database:
     return self.__connection
 
 
-  def create_user(self: Self, user: User) -> User:
-    # Code to append user to database
-    ...
+  def create_user(self: Self, _id: int, *, full_name: str, password: str) -> User:
+    with self as cursor:
+      cursor.execute(
+        """
+          INSERT INTO users (user_id, password, full_name) values (?, ?, ?)
+        """,
+        (_id, full_name, password)
+      )
+    return {
+      "user_id": _id,
+      "full_name": full_name,
+      "password": password
+    }
 
 
   @property
@@ -39,6 +49,7 @@ class FacultyDatabase(Database):
   def __init__(self: Self) -> None:
     super().__init__('database/faculty.db')
     with self as cursor:
+      cursor.execute("""DROP TABLE IF EXISTS users""")
       cursor.execute(
         """
           CREATE TABLE IF NOT EXISTS users (
@@ -77,17 +88,6 @@ class FacultyDatabase(Database):
 
   def __new__(cls, *args, **kwargs) -> Self:
     return cls._instance or super().__new__(cls)
-
-
-  def create_user(self: Self, _id: int, *, full_name: str, password: str) -> User:
-    with self as cursor:
-      cursor.execute(
-        """
-          INSERT INTO users (user_id, password, full_name) values (?, ?, ?)
-        """,
-        (_id, full_name, password)
-      )
-    return User(_id, full_name, password)
 
 
 class StudentDatabase(Database):
