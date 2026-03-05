@@ -1,0 +1,104 @@
+.cover {
+  color: var(--dark-text);
+  display: flex;
+  flex-direction: column;
+  left: 33%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+
+  > img {
+    align-self: center;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    width: 150px;
+  }
+  
+  > .title {
+    font-size: 4em;
+    font-weight: bold;
+  }
+
+  > .tagline {
+    font-size: 2em;
+    font-style: italic;
+  }
+}
+
+
+.container {
+  
+  align-items: center;
+  aspect-ratio: 3 / 4;
+  background-color: var(--dark-surface-0);
+  border-radius: 15px;
+  color: var(--dark-text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  left: 67%;
+  padding: 1rem 1.25rem;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+
+  > #title {
+    font-size: 2em;
+  }
+
+  > .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 25px;
+    width: 200px;
+
+    > input {
+      background-color: var(--dark-mantle);
+      border: none;
+      border-radius: 7px;
+      color: var(--dark-text);
+      padding: 0.5em 1em;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  > #forgotPassword {
+    font-size: 0.8em;
+    margin-top: 0.75rem;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  > #login-button {
+    aspect-ratio: 4 / 1;
+    background-color: var(--dark-surface-1);
+    border: none;
+    border-radius: 13px;
+    color: var(--dark-text);
+    font-size: 1em;
+    margin-top: 4rem;
+    padding: 0.75em 1.2em;
+
+    &:hover {
+      background-color: var(--dark-overlay-0);
+      cursor: pointer;
+    }
+  }
+
+  > #subtext-createAccount {
+    font-size: 0.8em;
+    margin-top: 0.75rem;
+
+    > #subtext-createAccount-redirect:hover {
+      cursor: pointer;
+    }
+  }
+}
