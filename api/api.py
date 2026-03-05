@@ -1,15 +1,21 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from src.models import User
-from api.db_copy_src import FacultyDatabase, StudentDatabase
-from fastapi import FastAPI
-import hashlib
+from .db import FacultyDatabase, StudentDatabase
+from .models import User
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from typing import Any
 
 
 app: FastAPI = FastAPI(
   root_path = "/api/v1"
+)
+
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=["*"],
+  allow_credentials=True,
+  allow_methods=["*"],
+  allow_headers=["*"],
 )
 
 
@@ -18,33 +24,12 @@ student_db: StudentDatabase = StudentDatabase()
 
 
 @app.post('/users/')
-def create_user_endpoint(user: User) -> dict:
-    """Create a new user account."""
-    try:
-        hashed_password = hashlib.sha256(user.password.encode()).hexdigest()
-        with faculty_db as cursor:
-            cursor.execute(
-                "INSERT INTO users (user_id, password, full_name) VALUES (?, ?, ?)",
-                (user._id, hashed_password, user.full_name)
-            )
-        return {"message": "User created successfully", "user_id": user._id, "full_name": user.full_name}
-    except Exception as e:
-        return {"error": str(e)}
+def create_user(payload: dict[str, Any]) -> dict[str, Any]:
+  return faculty_db.create_user(payload["_id"], full_name = payload["full_name"], password = payload["password"])
 
 
 @app.get('/users/{user_id}')
-def fetch_user(user_id: int) -> dict:
-    """Retrieve user data from the database."""
-    try:
-        with faculty_db as cursor:
-            cursor.execute("SELECT user_id, full_name FROM users WHERE user_id = ?", (user_id,))
-            row = cursor.fetchone()
-            if row:
-                return {
-                    "id_number": row[0],
-                    "full_name": row[1]
-                }
-            else:
-                return {"error": "User not found"}
-    except Exception as e:
-        return {"error": str(e)}
+def fetch_user(user_id: int) -> dict[str, Any]:
+  return {
+    "text": "Sample"
+  }

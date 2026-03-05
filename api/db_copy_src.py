@@ -1,3 +1,4 @@
+from .models import User
 from typing import Optional, Self
 import sqlite3
 
@@ -21,9 +22,19 @@ class Database:
     return self.__connection
 
 
-  def create_user(self: Self, user: User) -> User:
-    # Code to append user to database
-    ...
+  def create_user(self: Self, _id: int, *, full_name: str, password: str) -> User:
+    with self as cursor:
+      cursor.execute(
+        """
+          INSERT INTO users (user_id, password, full_name) values (?, ?, ?)
+        """,
+        (_id, full_name, password)
+      )
+    return {
+      "user_id": _id,
+      "full_name": full_name,
+      "password": password
+    }
 
 
   @property
@@ -38,6 +49,7 @@ class FacultyDatabase(Database):
   def __init__(self: Self) -> None:
     super().__init__('database/faculty.db')
     with self as cursor:
+      cursor.execute("""DROP TABLE IF EXISTS users""")
       cursor.execute(
         """
           CREATE TABLE IF NOT EXISTS users (
@@ -91,22 +103,6 @@ class StudentDatabase(Database):
             user_id INTEGER PRIMARY KEY,
             password TEXT NOT NULL,
             full_name TEXT
-          )
-        """
-      )
-      cursor.execute(
-        """
-          CREATE TABLE IF NOT EXISTS workflow_templates (
-            workflow_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            instruction TEXT,
-            intent TEXT,
-            status TEXT DEFAULT 'draft',
-            pdf_path TEXT,
-            signed_by TEXT,
-            signature_hash TEXT,
-            signed_at DATETIME,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
           )
         """
       )
