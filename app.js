@@ -12,7 +12,7 @@ app.set("view engine", "ejs");
 app.set("views", "./build/templates");
 
 
-app.get('/u/:userId/dashboard', (request, response) => {
+app.get('/u/:userId/dashboard', async (request, response) => {
   const userId = request.params.userId;
   getUser(userId).then(data => response.render("dashboard", data));
   createUser(userId, "Sample Full Name", "password123").then(data => console.log(data));
@@ -64,6 +64,18 @@ async function createUser(userId, fullName, password) {
 
 
 async function getUser(userId) {
-  const response = await fetch(`${apiBaseUrl}/users/${userId}`);
-  return await response.json();
+  try {
+    const response = await fetch(`${apiBaseUrl}/users/${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    return data;
+  } catch (error) {
+    console.error("Fetch error in getUser:", error);
+    throw error;
+  }
 }
