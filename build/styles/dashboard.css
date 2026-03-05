@@ -55,32 +55,73 @@ main {
   > #content {
     display: flex;
     flex-direction: column;
+    overflow-x: clip;
     overflow-y: auto;
     padding-bottom: 1rem;
-    width: calc(100% - 250px);
+    width: calc(100%);
+
+    > .heading {
+      left: 50px;
+      margin-top: 1rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+      width: max-content;
+    }
 
     > #workflows-container {
       display: flex;
       flex-direction: row;
-      justify-content: space-evenly;
+      justify-content: start;
+      padding: 0 50px;
 
       > .workflowTemplate {
-        aspect-ratio: 3 / 4;
+        align-items: center;
+        aspect-ratio: 3 / 5;
         background-color: var(--dark-surface-0);
         border-radius: 15px;
+        display: flex;
+        flex-direction: column;
         height: 250px;
+        justify-content: center;
         margin: 20px 0;
-        padding: 1rem 1.25rem;
+        padding: 0 1.25rem;
+        position: relative;
         transition: 0.3s linear;
 
         &:hover {
           cursor: pointer;
           transform: scale(1.05);
         }
+
+        > .workflow-name {
+          font-size: 1.75em;
+          font-weight: bold;
+        }
+
+        > .workflow-subtext {
+          font-size: 0.8em;
+        }
+
+        > .workflow-editButton {
+          background-color: transparent;
+          border: none;
+          border-radius: 7px;
+          color: var(--dark-text);
+          padding: 0.2em 0.5em;
+          position: absolute;
+          right: 10px;
+          top: 10px;
+
+          &:hover {
+            background-color: var(--dark-overlay-0);
+            cursor: pointer;
+          }
+        }
       }
     }
 
     > #historyOverview {
+      align-items: center;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
@@ -95,6 +136,7 @@ main {
         margin: 0 1rem;
         padding: 0.75em 1em;
         position: relative;
+        width: 80%;
 
         &:hover {
           cursor: pointer;

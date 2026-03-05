@@ -20,9 +20,9 @@ app.get('/login', (_, response) => {
   response.render("login");
 })
 
-app.get('/u/:userId/dashboard', (request, response) => {
+app.get('/u/:userId/dashboard', async (request, response) => {
   const userId = request.params.userId;
-  getUser(userId).then(data => response.render("dashboard", data));
+  response.render("dashboard");
 })
 
 app.get('/u/:userId/workflows', (request, response) => {
@@ -33,6 +33,7 @@ app.get('/u/:userId/workflows', (request, response) => {
 app.get('/u/:userId/workflows/:workflowId'), (request, response) => {
   const userId = request.params.userId;
   const workflowId = request.params.workflowId;
+  response.render("workflow");
 }
 
 app.get('/u/:userId/workflows/:workflowId/:workflowInstanceId', (request, response) => {
