@@ -9,6 +9,7 @@ from db import init_db, get_db, update_request_status, get_request_by_id, get_us
 from auth import create_access_token, get_current_user, hash_password, verify_password
 from schemas import UserCreate, Token, Instruction, SignatureApprovalRequest, WorkflowCreate, WorkflowTrigger
 from routers.agent1 import router as agent_router
+from routers.booking import router as booking_router
 
 load_dotenv()
 app = FastAPI(title="University Admin AI Agent")
@@ -25,6 +26,7 @@ app.add_middleware(
 init_db()
 
 app.include_router(agent_router, prefix="/api", tags=["Agent"])
+app.include_router(booking_router, prefix="/api/bookings", tags=["Bookings"])
 
 @app.post("/signup")
 def signup(user: UserCreate):
