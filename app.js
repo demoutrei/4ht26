@@ -16,9 +16,12 @@ app.get('/signup', (request, response) => {
   response.render("signup");
 })
 
-app.get('/u/:userId/dashboard', async (request, response) => {
+app.get('/login', (_, response) => {
+  response.render("login");
+})
+
+app.get('/u/:userId/dashboard', (request, response) => {
   const userId = request.params.userId;
-  createUser(userId, "Sample Full Name", "password123").then(data => console.log(data));
   getUser(userId).then(data => response.render("dashboard", data));
 })
 

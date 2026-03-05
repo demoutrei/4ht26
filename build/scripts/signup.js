@@ -1,7 +1,6 @@
 const idNumberInput = document.querySelector("#form-idNumber-input");
 const passwordInput = document.querySelector("#form-password-input");
 const fullLegalNameInput = document.querySelector("#form-fullName-input");
-const forgotPasswordText = document.querySelector("#forgotPassword");
 const createAccountButton = document.querySelector("#createAccount-button");
 const loginRedirectText = document.querySelector("#subtext-login-redirect");
 

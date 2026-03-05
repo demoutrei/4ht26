@@ -6,7 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
     <link rel="icon" href="/assets/favico.png">
     <link rel="stylesheet" href="/styles/base.css"/>
-    <link rel="stylesheet" href="/styles/signup.css"/>
+    <link rel="stylesheet" href="/styles/login.css"/>
     <title>Uniflow</title>
   </head>
   <body>
@@ -16,15 +16,15 @@
       <span class="tagline">Autonomous AI agent. Human-guided flow.</span>
     </div> 
     <div class="container">
-      <span id="title">Sign Up</span>
+      <span id="title">Log In</span>
       <div class="form-container">
-        <input required id="form-idNumber-input" type="text" placeholder="ID number">
-        <input required id="form-fullName-input" type="text" placeholder="Full Legal Name">
-        <input required id="form-password-input" type="password" placeholder="Password">
+        <input required id="form-idNumber-input" placeholder="ID Number" type="text">
+        <input required id="form-password-input" placeholder="password" type="password">
       </div>
-      <button id="createAccount-button">Create account</button>
-      <span id="subtext-login" class="subtext">Already have an account? <span id="subtext-login-redirect">Log In</span></span>
+      <span class="subtext" id="forgotPassword">Forgot Password?</span>
+      <button id="login-button">Log In</button>
+      <span class="subtext" id="subtext-createAccount">Don't have an account? <span id="subtext-createAccount-redirect">Create one!</span></span>
     </div>
-    <script type="module" src="/scripts/signup.js"></script>
+    <script type="module" src="/scripts/login.js"></script>
   </body>
 </html>

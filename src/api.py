@@ -30,6 +30,17 @@ def create_user(payload: dict[str, Any]) -> dict[str, Any]:
 
 @app.get('/users/{user_id}')
 def fetch_user(user_id: int) -> dict[str, Any]:
-  return {
-    "text": "Sample"
-  }
+  payload: dict[str, Any] = dict()
+  with faculty_db as cursor:
+    cursor.execute(
+      f"""
+        SELECT * FROM users WHERE user_id = ?
+      """,
+      (int(user_id),)
+    )
+    data = cursor.fetchone()
+    print(f"{data = }")
+    payload["_id"]: int = int(user_id)
+    payload["full_name"]: str = data[1]
+    payload["password"]: str = data[2]
+  return payload
