@@ -15,6 +15,7 @@ app.set("views", "./build/templates");
 app.get('/u/:userId/dashboard', (request, response) => {
   const userId = request.params.userId;
   getUser(userId).then(data => response.render("dashboard", data));
+  createUser(userId, "Sample Full Name", "password123").then(data => console.log(data));
 })
 
 app.get('/u/:userId/workflows', (request, response) => {
@@ -41,6 +42,25 @@ app.get('/u/:userId/history', (request, response) => {
 app.listen(port, host, () => {
   console.log(`Running on http://${host}:${port}`);
 })
+
+
+async function createUser(userId, fullName, password) {
+  const response = await fetch(
+    `${apiBaseUrl}/users/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        "_id": userId,
+        "full_name": fullName,
+        "password": password
+      }
+    }
+  );
+  return await response.json();
+}
 
 
 async function getUser(userId) {

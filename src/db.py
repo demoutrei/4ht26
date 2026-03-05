@@ -1,3 +1,4 @@
+from .models import User
 from typing import Optional, Self
 import sqlite3
 
@@ -76,6 +77,17 @@ class FacultyDatabase(Database):
 
   def __new__(cls, *args, **kwargs) -> Self:
     return cls._instance or super().__new__(cls)
+
+
+  def create_user(self: Self, _id: int, *, full_name: str, password: str) -> User:
+    with self as cursor:
+      cursor.execute(
+        """
+          INSERT INTO users (user_id, password, full_name) values (?, ?, ?)
+        """,
+        (_id, full_name, password)
+      )
+    return User(_id, full_name, password)
 
 
 class StudentDatabase(Database):

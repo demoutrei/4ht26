@@ -13,9 +13,9 @@ student_db: StudentDatabase = StudentDatabase()
 
 
 @app.post('/users/')
-def create_user(user: User) -> User:
-  ...
-  # Code to create User here
+def create_user(_id: int, full_name: str, password: str) -> User:
+  user: User = faculty_db.create_user(_id, full_name = full_name, password = password)
+  return user
 
 
 @app.get('/users/{user_id}')
