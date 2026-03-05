@@ -31,16 +31,18 @@
         </div>
         <span class="heading">History</span>
         <div id="historyOverview">
-          <div class="workflowInstanceOverview">
-            <img class="workflow-icon">
-            <span class="workflow-name">Workflow Name Placeholder</span>
-            <span class="workflow-status">Workflow Status Placeholder</span>
-            <div class="workflow-options show">
+          <% instances.forEach(instance => { %>
+            <div class="workflowInstanceOverview">
+              <img class="workflow-icon">
+              <span class="workflow-name">Booking</span>
+              <span class="workflow-status">Pending</span>
+              <div class="workflow-options show">
               <div id="workflow-options-edit" class="workflow-option">Edit</div>
               <div id="workflow-options-rerun" class="workflow-option">Rerun</div>
               <div id="workflow-options-delete" class="workflow-option">Delete</div>
             </div>
-          </div>
+            </div>
+          <% }); %>
         </div>
       </section>
     </main>

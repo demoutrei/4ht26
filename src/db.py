@@ -15,7 +15,6 @@ class Database:
     self.__connection: sqlite3.Connection = sqlite3.connect(self.path, check_same_thread = False)
     self.connection.row_factory: sqlite3.Row = sqlite3.Row
     with self as cursor:
-      self.clear_table("users")
       cursor.execute(
         """
           CREATE TABLE IF NOT EXISTS users (
@@ -99,9 +98,64 @@ class Database:
     if not data: return None
     return dict(data)
 
+  def get_workflow(self: Self, workflow_id: int) -> Optional[dict[str, Any]]:
+    data: Optional[dict[str, Any]] = None
+    with self as cursor:
+      cursor.execute(
+        f"""
+          SELECT * FROM workflow_templates WHERE workflow_id = ?
+        """,
+        (int(workflow_id),)
+      )
+      data: Optional[dict[str, Any]] = cursor.fetchone()
+    if not data: return None
+    return dict(data)
+
+  def get_workflow_instance(self: Self, user_id: int, instance_id: int) -> Optional[dict[str, Any]]:
+    data: Optional[dict[str, Any]] = None
+    with self as cursor:
+      cursor.execute(
+        f"""
+          SELECT * FROM workflow_instances WHERE user_id = ? AND instance_id = ?
+        """,
+        (int(user_id), int(instance_id))
+      )
+      data: Optional[dict[str, Any]] = cursor.fetchone()
+    if not data: return None
+    return dict(data)
+
+  def get_workflow_instances(self: Self, user_id: int) -> list[dict[str, Any]]:
+    data: list[dict[str, Any]] = list()
+    with self as cursor:
+      cursor.execute(
+        """
+          SELECT * FROM workflow_instances WHERE user_id = ?
+        """,
+        (int(user_id),)
+      )
+      data: list[dict[str, Any]] = cursor.fetchall()
+    return [dict(item) for item in data]
+
   @property
   def path(self: Self) -> str:
     return self.__file_path
+
+  def trigger_workflow(self: Self, user_id: int, workflow_id: int) -> dict[str, Any]:
+    instance_id: int = None
+    with self as cursor:
+      cursor.execute(
+        """
+          INSERT INTO workflow_instances (user_id, workflow_id) values (?, ?)
+        """,
+        (int(user_id), int(workflow_id))
+      )
+      instance_id = cursor.execute(
+        """
+          SELECT MAX(instance_id) FROM workflow_instances
+        """
+      )
+      instance_id = list(cursor.fetchone())[0]
+    return self.get_workflow_instance(user_id, instance_id)
 
 
 # class FacultyDatabase(Database):

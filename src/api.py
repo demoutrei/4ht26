@@ -35,3 +35,13 @@ def create_user(payload: dict[str, Any]) -> dict[str, Any]:
 @app.get('/users/{user_id}')
 def fetch_user(user_id: int) -> Optional[dict[str, Any]]:
   return database.fetch_user(user_id)
+
+
+@app.get('/users/{user_id}/workflows/instances')
+def workflow_instances(user_id: int) -> list[dict[str, Any]]:
+  return database.get_workflow_instances(user_id)
+
+
+@app.post('/users/{user_id}/workflows/{workflow_id}/trigger')
+def workflow_trigger(user_id: int, workflow_id: int) -> dict[str, Any]:
+  return database.trigger_workflow(user_id, workflow_id)

@@ -44,45 +44,54 @@ header {
 main {
   box-sizing: border-box;
   height: calc(100vh - 50px);
+  width: 100vw;
 
-  > #drawflow-canvas {
-    height: 100vh;
-    left: 0;
+  > #container {
+    background-color: var(--dark-surface-0);
+    border-radius: 13px;
+    color: var(--dark-text);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+    left: 50%;
     position: absolute;
-    top: 0;
-    width: 100vw;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
 
-    &:hover {
-      cursor: move;
+    > .title {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-top: 1rem;
+      margin-left: 1.25rem;
     }
 
-    .connection {
-      > .main-path {
-        stroke: #8839ef;
+    > .node {
+      padding: 0.33rem 1.25rem;
+
+      &:last-child {
+        margin-bottom: 0.45rem;
       }
-    }
-    
-    .node {
-      aspect-ratio: 3 / 1;
-      background-color: white;
-      border: none;
-      padding: 0.5em 0.75em;
-
+      
       &:hover {
+        background-color: var(--dark-overlay-0);
         cursor: pointer;
       }
 
-      .input, .output {
-        background-color: white;
-        border-color: white;
+      &.completed {
+        color: lime;
       }
 
-      .input {
-        left: -25px;
+      &.ongoing {
+        color: orange;
       }
 
-      .output {
-        right: 0px;
+      &.pending {
+        color: #212121;
+      }
+
+      &.incompleted {
+        color: red;
       }
     }
   }

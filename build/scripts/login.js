@@ -17,8 +17,6 @@ loginButton.addEventListener("click", (_) => {
     response => response.json()
   ).then(
     data => {
-      console.log(data["password"]);
-      console.log(passwordInput.value != data["password"]);
       if (passwordInput.value != data["password"]) return;
       window.open(`/u/${idNumberInput.value}/dashboard`, "_self");
     }

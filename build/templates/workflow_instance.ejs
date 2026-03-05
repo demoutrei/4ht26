@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<head lang="en">
   <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..900&display=swap" rel="stylesheet">
     <link rel="icon" href="/assets/favico.png">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.css">
     <link rel="stylesheet" href="/styles/base.css"/>
-    <link rel="stylesheet" href="/styles/workflow.css"/>
+    <link rel="stylesheet" href="/styles/workflow_instance.css"/>
     <title>Uniflow</title>
   </head>
   <body>
@@ -18,9 +17,15 @@
       </nav>
     </header>
     <main>
-       <div id="drawflow-canvas"></div>
+      <div id="container">
+        <span class="title">Booking</span>
+        <div class="node completed">Form</div>
+        <div class="node completed">Scheduling</div>
+        <div class="node ongoing">Registration</div>
+        <div class="node pending">Confirmation</div>
+        <div class="node incompleted">Payment Processing</div>
+      </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/gh/jerosoler/Drawflow/dist/drawflow.min.js"></script>
-    <script type="module" src="/scripts/workflow.js"></script>
+    <script type="module" src="/scripts/workflow_instance.js"></script>
   </body>
-</html>
+</head>

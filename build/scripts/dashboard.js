@@ -15,7 +15,7 @@ const workflowTemplatesArray = document.querySelectorAll(".workflowTemplate");
 
 workflowTemplatesArray.forEach(workflowTemplate => {
   const workflowId = workflowTemplate.dataset.workflowId;
-  workflowTemplate.addEventListener("click", (_) => {
+  workflowTemplate.querySelector(".workflow-name").addEventListener("click", (_) => {
     window.open(`./workflows/${workflowId}/trigger`, "_self");
   })
   workflowTemplate.querySelector(".workflow-editButton").addEventListener("click", (_) => {

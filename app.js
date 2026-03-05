@@ -22,7 +22,8 @@ app.get('/login', (_, response) => {
 
 app.get('/u/:userId/dashboard', async (request, response) => {
   const userId = request.params.userId;
-  response.render("dashboard");
+  const instances = await (await fetch(`${apiBaseUrl}/users/${userId}/workflows/instances`)).json();
+  return response.render("dashboard", {instances: instances});
 })
 
 app.get('/u/:userId/workflows', (request, response) => {
@@ -30,20 +31,34 @@ app.get('/u/:userId/workflows', (request, response) => {
   getUser(userId).then(data => response.render("workflows", data));
 })
 
-app.get('/u/:userId/workflows/:workflowId'), (request, response) => {
+app.get('/u/:userId/workflows/:workflowId', (request, response) => {
   const userId = request.params.userId;
   const workflowId = request.params.workflowId;
-  response.render("workflow");
-}
+  return response.render("workflow");
+})
+
+app.get('/u/:userId/workflows/:workflowId/trigger', (request, response) => {
+  const userId = request.params.userId;
+  const workflowId = request.params.workflowId;
+  fetch(
+    `${apiBaseUrl}/users/${userId}/workflows/${workflowId}/trigger`,
+    {
+      method: "POST"
+    }
+  ).then(
+    response => response.json()
+  ).then(
+    data => {
+      return response.redirect(`/u/${data.user_id}/workflows/${data.workflow_id}/${data.instance_id}`)
+    }
+  )
+})
 
 app.get('/u/:userId/workflows/:workflowId/:workflowInstanceId', (request, response) => {
   const userId = request.params.userId;
   const workflowId = request.params.workflowId;
   const workflowInstanceId = request.params.workflowInstanceId;
-})
-
-app.get('/u/:userId/history', (request, response) => {
-  const userId = request.params.userId;
+  return response.render("workflow_instance");
 })
 
 
