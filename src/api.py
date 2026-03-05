@@ -12,7 +12,7 @@ faculty_db: FacultyDatabase = FacultyDatabase()
 student_db: StudentDatabase = StudentDatabase()
 
 
-@app.get('/users/')
+@app.post('/users/')
 def create_user(user: User) -> User:
   ...
   # Code to create User here

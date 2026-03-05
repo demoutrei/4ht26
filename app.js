@@ -2,6 +2,7 @@ import express from 'express';
 
 
 const app = express();
+const host = "127.0.0.1";
 const port = 5500;
 const apiBaseUrl = "http://127.0.0.1:8000/api/v1";
 
@@ -16,9 +17,29 @@ app.get('/u/:userId/dashboard', (request, response) => {
   getUser(userId).then(data => response.render("dashboard", data));
 })
 
+app.get('/u/:userId/workflows', (request, response) => {
+  const userId = request.params.userId;
+  getUser(userId).then(data => response.render("workflows", data));
+})
 
-app.listen(port, "127.0.0.1", () => {
-  console.log("listening");
+app.get('/u/:userId/workflows/:workflowId'), (request, response) => {
+  const userId = request.params.userId;
+  const workflowId = request.params.workflowId;
+}
+
+app.get('/u/:userId/workflows/:workflowId/:workflowInstanceId', (request, response) => {
+  const userId = request.params.userId;
+  const workflowId = request.params.workflowId;
+  const workflowInstanceId = request.params.workflowInstanceId;
+})
+
+app.get('/u/:userId/history', (request, response) => {
+  const userId = request.params.userId;
+})
+
+
+app.listen(port, host, () => {
+  console.log(`Running on http://${host}:${port}`);
 })
 
 

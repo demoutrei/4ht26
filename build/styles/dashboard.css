@@ -17,3 +17,111 @@ header {
     font-weight: bold;
   }
 }
+
+main {
+  box-sizing: border-box;
+  color: var(--dark-text);
+  display: flex;
+  flex-direction: row;
+  height: calc(100% - 50px);
+  position: absolute;
+  width: 100%;
+  
+  > #sidePanel {
+    background-color: var(--dark-surface-0);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    padding-bottom: 1rem;
+    width: 250px;
+
+    > .navigator {
+      background-color: var(--dark-mantle);
+      border-radius: 13px;
+      padding: 0.5em 0.75em;
+      
+      &:hover {
+        background-color: var(--dark-overlay-0);
+        cursor: pointer;
+      }
+      
+      &:first-child {
+        margin-top: 0.25rem;
+      }
+    }
+  }
+
+  > #content {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-bottom: 1rem;
+    width: calc(100% - 250px);
+
+    > #workflows-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+
+      > .workflowTemplate {
+        aspect-ratio: 3 / 4;
+        background-color: var(--dark-surface-0);
+        border-radius: 15px;
+        height: 250px;
+        margin: 20px 0;
+        padding: 1rem 1.25rem;
+        transition: 0.3s linear;
+
+        &:hover {
+          cursor: pointer;
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    > #historyOverview {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      > .workflowInstanceOverview {
+        align-items: center;
+        background-color: var(--dark-mantle);
+        border-radius: 18px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 0 1rem;
+        padding: 0.75em 1em;
+        position: relative;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        > .workflow-options {
+          display: flex;
+          flex-direction: row;
+          gap: 0.6em;
+
+          > .workflow-option {
+            transition: 0.3s linear;
+            
+            &#workflow-options-edit:hover {
+              color: orange;
+            }
+
+            &#workflow-options-rerun:hover {
+              color: green;
+            }
+
+            &#workflow-options-delete:hover {
+              color: red;
+            }
+          }
+        }
+      }
+    }
+  }
+}
