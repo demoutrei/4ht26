@@ -51,25 +51,6 @@ app.listen(port, host, () => {
 })
 
 
-async function createUser(userId, fullName, password) {
-  const response = await fetch(
-    `${apiBaseUrl}/users/`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        "_id": userId,
-        "full_name": fullName,
-        "password": password
-      })
-    }
-  );
-  return await response.json();
-}
-
-
 async function getUser(userId) {
   const response = await fetch(`${apiBaseUrl}/users/${userId}`);
   return await response.json();

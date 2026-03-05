@@ -67,12 +67,30 @@
     }
   }
 
-  > #forgotPassword {
-    font-size: 0.8em;
-    margin-top: 0.75rem;
+  > #userType-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 25px;
+    width: 200px;
 
-    &:hover {
-      cursor: pointer;
+    > .label {
+      font-size: 0.8em;
+    }
+
+    > .form-userType-option {
+      background-color: var(--dark-mantle);
+      border-radius: 7px;
+      box-sizing: border-box;
+      padding: 0.25em 0.75em;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &.selected {
+        border: 1px solid white;
+      }
     }
   }
 
@@ -83,7 +101,7 @@
     border-radius: 13px;
     color: var(--dark-text);
     font-size: 1em;
-    margin-top: 4rem;
+    margin-top: 3.5rem;
     padding: 0.75em 1.2em;
 
     &:hover {
